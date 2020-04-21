@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class BeatBox {
     JPanel mainPanel;
-    ArrayList<JCheckBox> checkBoxList;
+    ArrayList<JCheckBox> checkBoxList; // Флажки будут храниться и перебираться в массиве
     Sequencer sequencer;
     Sequence sequence;
     Track track;
@@ -17,7 +17,7 @@ public class BeatBox {
             "Hand Clap", "High Tom", "Hi Bongo", "Maracas", "Whistle", "Low Conga", "Cowbell", "Vibraslap",
             "Low-mid Tom", "High-Agogo", "Open Hi-Conga"};
 
-    int[] instruments = {35,42,46,38,49,39,50,60,70,72,64,56,58,47,67,63};
+    int[] instruments = {35,42,46,38,49,39,50,60,70,72,64,56,58,47,67,63}; //Барабанные клавши
 
     public static void main(String[] args) {
         new BeatBox().buildGUI();
@@ -49,7 +49,7 @@ public class BeatBox {
         downTempo.addActionListener(new MyDownTempoListener());
         buttonBox.add(downTempo);
 
-        Box nameBox = new Box(BoxLayout.Y_AXIS);
+        Box nameBox = new Box(BoxLayout.Y_AXIS); //Создаем панель с названиями инструментов
         for (int i = 0; i < 16 ; i++) {
             nameBox.add(new Label(instrumentNames[i]));
         }
@@ -65,7 +65,7 @@ public class BeatBox {
         mainPanel = new JPanel(grid);
         background.add(BorderLayout.CENTER, mainPanel);
 
-        for (int i = 0; i < 256; i++) {
+        for (int i = 0; i < 256; i++) { //Создаем флажки для инструментов, по-умолчанию false
             JCheckBox c = new JCheckBox();
             c.setSelected(false);
             checkBoxList.add(c);
@@ -82,25 +82,25 @@ public class BeatBox {
 
     public void setUpMidi(){
         try{
-            sequencer = MidiSystem.getSequencer();
+            sequencer = MidiSystem.getSequencer(); //получение синтезатора
             sequencer.open();
             sequence = new Sequence(Sequence.PPQ,4);
-            track = sequence.createTrack();
-            sequencer.setTempoInBPM(120);
-
+            track = sequence.createTrack(); //MIDI мелодия получается созданием сообщения с информацией о ноте, инструменте,
+            sequencer.setTempoInBPM(120);   // канале воспроизведения. Затем создается событие на остнвании сообщения.
+                                            // событие добавляется в трек, трек в конструктор синтезатора, синтезатор запускается
         }catch (Exception ex){ex.printStackTrace();}
     }
 
     public void buildTrackAndStart(){
         int[] trackList = null;
 
-        sequence.deleteTrack(track);
+        sequence.deleteTrack(track);  //Удаление старой дорожки и создание новой на каждый проигрыш
         track = sequence.createTrack();
 
         for (int i = 0; i < 16; i++) {
             trackList = new int[16];
 
-            int key = instruments[i];
+            int key = instruments[i]; //перебираем в цикле, на каком барабане стоит флажек
 
             for (int j = 0; j < 16; j++) {
                 JCheckBox jc = (JCheckBox) checkBoxList.get(j + (16 * i));
